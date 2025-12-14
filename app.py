@@ -11,3 +11,8 @@ def hello_world():
 
 def about_page():
     return 'This is the official About page for my cool Python backend'
+
+@app.route('/greet/<name>')
+
+def greet_user(name):
+    return f"Hello there, {name}! Welcome to your personalized page."
