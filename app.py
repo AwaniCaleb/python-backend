@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -15,4 +15,4 @@ def about_page():
 @app.route('/greet/<name>')
 
 def greet_user(name):
-    return f"Hello there, {name}! Welcome to your personalized page."
+    return render_template('profile.html', user_name=name)
