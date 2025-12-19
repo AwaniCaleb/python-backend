@@ -3,6 +3,8 @@ import os
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
@@ -44,8 +46,10 @@ def handle_form():
         
         if not email or not password:
             return 'Email and Password are required fields.', 400
+        
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
 
-        new_user = User(email=email, password=password)
+        new_user = User(email=email, password=hashed_password)
         
         try:
             db.session.add(new_user)
@@ -60,3 +64,24 @@ def handle_form():
         return render_template('login.html', title='Login Page')
     else:
         return 'Unsupported request method.'
+
+@app.route('/login', methods=['POST', 'GET'])
+
+def login():
+    if request.method == 'POST':
+        data = request.form
+
+        email = data.get('email') or None
+        password = data.get('password') or None
+
+        if not email or not password:
+            return 'Email and Password are required fields.', 400
+        
+        user = User.query.filter_by(email=email).first()
+
+        if user and check_password_hash(user.password, password):
+            return render_template('profile.html', user_name=email)
+        else:
+            return 'Invalid email or password.', 401
+    
+    return render_template('login.html', title='Login Page')
