@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -16,3 +16,13 @@ def about_page():
 
 def greet_user(name):
     return render_template('profile.html', user_name=name)
+
+@app.route('/submit-data', methods=['POST', 'GET'])
+
+def handle_form():
+    if request.method == 'POST':
+        return 'Form submitted successfully!'
+    elif request.method == 'GET':
+        return 'Please submit the form using POST method to save data.'
+    else:
+        return 'Unsupported request method.'
