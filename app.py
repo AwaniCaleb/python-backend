@@ -23,6 +23,6 @@ def handle_form():
     if request.method == 'POST':
         return 'Form submitted successfully!'
     elif request.method == 'GET':
-        return 'Please submit the form using POST method to save data.'
+        return render_template('login.html', title='Login Page')
     else:
         return 'Unsupported request method.'
