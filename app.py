@@ -45,7 +45,17 @@ def handle_form():
         if not email or not password:
             return 'Email and Password are required fields.', 400
 
-        return render_template('login-success.html', title='Login Success', user_email=email)
+        new_user = User(email=email, password=password)
+        
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+
+            return render_template('login-success.html', title='Login Success', user_email=email)
+        except Exception as e:
+            db.session.rollback()
+            return f'An error occurred while saving to the database: {str(e)}', 500
+
     elif request.method == 'GET':
         return render_template('login.html', title='Login Page')
     else:
