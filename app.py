@@ -107,3 +107,8 @@ def dashboard():
     user = User.query.get(user_id)
 
     return render_template('dashboard.html', title='Dashboard', user=user)
+
+@app.errorhandler(404)
+
+def page_not_found(e):
+    return render_template('404.html', title='Page Not Found'), 404
