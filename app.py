@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -85,7 +85,8 @@ def login():
             session['user_id'] = user.id
             return redirect('/dashboard')
         else:
-            return 'Invalid email or password.', 401
+            flash('Invalid email or password.', 'error')
+            return redirect('/login')
     
     return render_template('login.html', title='Login Page')
 
