@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,6 +9,8 @@ app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.secret_key = os.urandom(24)
 
 db = SQLAlchemy(app)
 
@@ -80,8 +82,27 @@ def login():
         user = User.query.filter_by(email=email).first()
 
         if user and check_password_hash(user.password, password):
-            return render_template('profile.html', user_name=email)
+            session['user_id'] = user.id
+            return redirect('/dashboard')
         else:
             return 'Invalid email or password.', 401
     
     return render_template('login.html', title='Login Page')
+
+@app.route('/logout')
+
+def logout():
+    session.pop('user_id', None)
+    return redirect('/login')
+
+@app.route('/dashboard')
+
+def dashboard():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return redirect('/login')
+    
+    user = User.query.get(user_id)
+
+    return render_template('dashboard.html', title='Dashboard', user=user)
